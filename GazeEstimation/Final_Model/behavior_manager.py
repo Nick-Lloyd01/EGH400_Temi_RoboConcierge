@@ -6,9 +6,6 @@ This module contains behavior management components:
 - ProximityGate: Monitors face proximity for interaction readiness
 - BehaviorManager: Tracks sustained gaze and triggers behaviors
 - SensorGate: Handles sensor-based behavior interrupts
-
-Author: Nicholas Lloyd
-Date: October 2025
 """
 
 import time
@@ -81,7 +78,6 @@ def refine_gaze(is_looking: bool, pitch: float, yaw: float, roll: float,
         Refined gaze classification (currently unchanged from input)
         
     Future Enhancements:
-        - Roboflow eye-gaze model integration
         - MediaPipe iris tracking
         - Temporal smoothing of gaze decisions
         - Eye state analysis (open/closed, blink detection)

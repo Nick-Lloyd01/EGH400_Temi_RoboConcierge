@@ -15,11 +15,10 @@ This is the main orchestration module that coordinates all components:
 - Visualization and user interface
 - Performance monitoring and logging
 
-Author: Nicholas Lloyd
-Date: October 2025
-
 Usage:
     python main.py
+    python analyze_results.py "Control Tests/Control Result CSV/output_1324_CSV_results.csv"
+    python create_graphs.py "Control Tests/Control Result CSV/output_1324_CSV_results.csv"
 
 Controls:
     'q' - Quit application
@@ -39,6 +38,7 @@ from utils import *
 from detection_layers import FacePoseEstimator
 from subsumption_layers import SubsumptionCoordinator  
 from behavior_manager import BehaviorCoordinator
+from data_logger import DataLogger  # Import data logging module
 
 # =============================================================================
 # MAIN APPLICATION CLASS
@@ -81,6 +81,13 @@ class TemiControlCenter:
         self.log_performance = ENABLE_PERFORMANCE_LOGGING
         self.is_video_mode = VIDEO_MODE  # Track if we're processing video file
         
+        # Data logging for analysis (if enabled)
+        self.data_logger = None
+        self.current_classification = 'True_Positive'  # Default classification
+        if ENABLE_CSV_LOGGING and VIDEO_MODE:
+            self.data_logger = DataLogger(CSV_OUTPUT_PATH)
+            print("📊 CSV data logging enabled")
+        
         print("=" * 60)
         print("✅ Temi Control Center initialized successfully!")
         print("\nMode: " + ("📹 VIDEO PROCESSING" if VIDEO_MODE else "📷 LIVE CAMERA"))
@@ -96,7 +103,14 @@ class TemiControlCenter:
         print("  3. Human Interaction Management")
         print("  4. Face-First Gaze Detection")
         print("  5. Base Robot Behaviors (LOWEST)")
-        print("\nControls: 'q'=quit, 'r'=reset, 's'=status, 'p'=toggle performance")
+        
+        if self.data_logger:
+            print("\n📊 Data Logging Controls:")
+            print("  'p' = Mark FALSE POSITIVE (incorrect detection)")
+            print("  'n' = Mark FALSE NEGATIVE (missed detection)")
+            print("  (Otherwise = TRUE POSITIVE)")
+        
+        print("\nControls: 'q'=quit, 'r'=reset, 's'=status")
         print("=" * 60)
     
     def _initialize_camera(self) -> cv2.VideoCapture:
@@ -210,6 +224,31 @@ class TemiControlCenter:
                     
                 if not self._handle_user_input(key, results):
                     break
+                
+                # Log data to CSV if enabled
+                if self.data_logger:
+                    frame_time_ms = results.get('processing_time', 0) * 1000
+                    fps = self._calculate_fps()
+                    
+                    # Auto-classify based on detection if user didn't manually annotate
+                    classification = self.current_classification
+                    if self.current_classification == 'True_Positive':
+                        # Check if face was detected
+                        face_detected = (results['pose_data'] is not None and 
+                                       results['pose_data'].get('ok', False))
+                        if not face_detected:
+                            classification = 'True_Negative'  # No face detected, assume correct
+                    
+                    self.data_logger.log_frame(
+                        self.frame_count,
+                        results['pose_data'],
+                        results['behavior_results'],
+                        fps,
+                        frame_time_ms,
+                        classification
+                    )
+                    # Reset classification for next frame
+                    self.current_classification = 'True_Positive'
                 
                 # Performance tracking
                 self._update_performance_metrics()
@@ -486,10 +525,15 @@ class TemiControlCenter:
             print("=" * 40)
             self._print_status_summary(results)
         
-        elif key == ord('p'):
-            self.log_performance = not self.log_performance
-            status = "enabled" if self.log_performance else "disabled"
-            print(f"\n📈 Performance logging {status}")
+        elif key == ord('p') and self.data_logger:
+            # Mark current frame as FALSE POSITIVE
+            self.current_classification = 'False_Positive'
+            print(f"\n🔴 Frame {self.frame_count}: Marked as FALSE POSITIVE")
+        
+        elif key == ord('n') and self.data_logger:
+            # Mark current frame as FALSE NEGATIVE
+            self.current_classification = 'False_Negative'
+            print(f"\n� Frame {self.frame_count}: Marked as FALSE NEGATIVE")
         
         return True
     
@@ -591,6 +635,10 @@ class TemiControlCenter:
     def _cleanup(self):
         """Clean up resources before exit."""
         print("\n🧹 Cleaning up...")
+        
+        # Close data logger if active
+        if hasattr(self, 'data_logger') and self.data_logger is not None:
+            self.data_logger.close()
         
         # Release video writer if active
         if hasattr(self, 'video_writer') and self.video_writer is not None:

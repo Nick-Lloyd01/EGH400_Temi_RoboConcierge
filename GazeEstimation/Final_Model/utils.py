@@ -6,9 +6,6 @@ This module contains utility functions for:
 - Image preprocessing and enhancement
 - Coordinate transformations
 - Face landmark estimation
-
-Author: Nicholas Lloyd
-Date: October 2025
 """
 
 import cv2

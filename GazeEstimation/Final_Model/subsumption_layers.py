@@ -9,9 +9,6 @@ Layer 4: Gaze Detection Processing
 Layer 5: Base Robot Behaviors (Lowest Priority)
 
 Each layer can suppress lower-priority layers when active.
-
-Author: Nicholas Lloyd
-Date: October 2025
 """
 
 import time
@@ -343,21 +340,17 @@ class ApproachingLayer:
 
 class GazeDetectionLayer:
     """
-    Layer 4: Combined gaze detection using multiple detection methods.
+    Layer 4: Gaze detection using MediaPipe and head pose estimation.
     
-    This layer coordinates different gaze detection approaches:
-    - MediaPipe + OpenCV head pose estimation (primary)
-    - Roboflow eye detection (future enhancement)
-    - Confidence weighting and method selection
+    This layer processes gaze detection from MediaPipe facial landmarks
+    and OpenCV head pose estimation.
     """
     
     def __init__(self):
-        """Initialize gaze detection coordination layer."""
+        """Initialize gaze detection layer."""
         self.mediapipe_active = True
-        self.roboflow_active = False  # Placeholder for future integration
         self.gaze_data = {
             'mediapipe_result': None,
-            'roboflow_result': None,
             'combined_result': None,
             'confidence_source': 'none',
             'last_update': time.time()
@@ -385,52 +378,17 @@ class GazeDetectionLayer:
         }
         return self.gaze_data['mediapipe_result']
     
-    def update_roboflow_gaze(self, eye_detection_result: Optional[Dict]) -> Dict[str, Any]:
-        """
-        Update gaze detection from Roboflow eye detection (placeholder for future).
-        
-        Args:
-            eye_detection_result: Result from Roboflow eye detection model
-            
-        Returns:
-            Roboflow gaze result dictionary
-        """
-        # Placeholder for future Roboflow eye detection integration
-        self.gaze_data['roboflow_result'] = {
-            'active': self.roboflow_active,
-            'eye_detected': False,
-            'gaze_direction': None,
-            'confidence': 0.0
-        }
-        
-        if eye_detection_result and self.roboflow_active:
-            self.gaze_data['roboflow_result'].update(eye_detection_result)
-        
-        return self.gaze_data['roboflow_result']
-    
     def get_combined_gaze_result(self) -> Dict[str, Any]:
         """
-        Combine results from all available gaze detection methods.
+        Get gaze detection result from MediaPipe processing.
         
         Returns:
-            Combined gaze detection result with method prioritization:
-            - Roboflow (highest priority when available)
-            - MediaPipe (primary method currently)
-            - None (no reliable detection)
+            Gaze detection result with confidence and method info
         """
         mediapipe = self.gaze_data['mediapipe_result']
-        roboflow = self.gaze_data['roboflow_result']
         
-        # Priority: Roboflow (when available) > MediaPipe
-        if roboflow and roboflow['active'] and roboflow['confidence'] > 0.6:
-            combined_result = {
-                'looking': roboflow.get('eye_detected', False),
-                'method': 'roboflow',
-                'confidence': roboflow['confidence'],
-                'details': roboflow
-            }
-            self.gaze_data['confidence_source'] = 'roboflow'
-        elif mediapipe and mediapipe['active'] and mediapipe['confidence'] > 0.5:
+        # Use MediaPipe result if available and confident
+        if mediapipe and mediapipe['active'] and mediapipe['confidence'] > 0.5:
             combined_result = {
                 'looking': mediapipe.get('looking', False),
                 'method': 'mediapipe',

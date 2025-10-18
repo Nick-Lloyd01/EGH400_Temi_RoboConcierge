@@ -1,193 +1,389 @@
-# Temi 5-Layer Subsumption Architecture
-## Face Detection & Gaze Tracking System
+# Temi 5-Layer Subsumption Architecture# Temi 5-Layer Subsumption Architecture
 
-**Author:** Nicholas Lloyd  
-**Date:** October 2025  
-**Project:** EGH400
+## Face Detection & Gaze Tracking System## Face Detection & Gaze Tracking System
 
----
 
-## 📋 Overview
 
-This is a sophisticated face detection and gaze tracking system designed for the Temi robot, implementing a **5-layer subsumption architecture** with face-first detection capabilities. The system can operate in two modes: real-time camera processing or offline video analysis.
+**Author:** Nicholas Lloyd  **Author:** Nicholas Lloyd  
 
-### Key Features
+**Date:** October 2025  **Date:** October 2025  
+
+**Project:** EGH400**Project:** EGH400
+
+
+
+------
+
+
+
+## 🚀 Quick Start## 📋 Overview
+
+
+
+### Basic UsageThis is a sophisticated face detection and gaze tracking system designed for the Temi robot, implementing a **5-layer subsumption architecture** with face-first detection capabilities. The system can operate in two modes: real-time camera processing or offline video analysis.
+
+```bash
+
+# Run with live camera### Key Features
+
+python main.py
 
 - ✅ **Face-First Detection Pipeline**: YOLO face detection → MediaPipe landmarks → 3D pose estimation
-- ✅ **Gaze Direction Tracking**: Real-time head pose analysis (pitch, yaw, roll)
-- ✅ **Distance Estimation**: Adaptive proximity detection at multiple ranges
-- ✅ **Behavior Management**: Sustained gaze detection and interaction triggers
-- ✅ **Subsumption Architecture**: 5-layer priority-based behavior system
-- ✅ **Dual Mode Operation**: Live camera or video file processing
-- ✅ **Comprehensive Visualization**: All detections overlayed on output
 
----
+# Run with video file (configure in config.py first)- ✅ **Gaze Direction Tracking**: Real-time head pose analysis (pitch, yaw, roll)
+
+python main.py- ✅ **Distance Estimation**: Adaptive proximity detection at multiple ranges
+
+```- ✅ **Behavior Management**: Sustained gaze detection and interaction triggers
+
+- ✅ **Subsumption Architecture**: 5-layer priority-based behavior system
+
+### Configuration- ✅ **Dual Mode Operation**: Live camera or video file processing
+
+Edit `config.py` to set:- ✅ **Comprehensive Visualization**: All detections overlayed on output
+
+- `VIDEO_MODE = True/False` - Switch between camera and video input- ✅ **Data Logging & Analysis**: Complete CSV logging with 4-way classification
+
+- `INPUT_VIDEO_PATH` - Path to input video- ✅ **Report Generation Tools**: Automatic tables, graphs, and LaTeX output
+
+- `OUTPUT_VIDEO_PATH` - Path to save processed video
+
+- `ENABLE_CSV_LOGGING = True/False` - Enable data logging---
+
+- `CSV_OUTPUT_PATH` - Path to save CSV results
 
 ## 🏗️ System Architecture
 
-### 5-Layer Subsumption Hierarchy (Priority Order)
+### Keyboard Controls (During Execution)
 
-1. **Layer 1: Battery Management** (Highest Priority)
-   - Critical battery monitoring
-   - Emergency charging behavior
+- **'q'** - Quit program### 5-Layer Subsumption Hierarchy (Priority Order)
 
-2. **Layer 2: Sensor Safety Systems**
+- **'p'** - Mark frame as False Positive (data logging mode)
+
+- **'n'** - Mark frame as False Negative (data logging mode)1. **Layer 1: Battery Management** (Highest Priority)
+
+- **'r'** - Reset behavior state   - Critical battery monitoring
+
+- **'s'** - Print status summary   - Emergency charging behavior
+
+
+
+---2. **Layer 2: Sensor Safety Systems**
+
    - Obstacle detection
-   - Emergency stop protocols
 
-3. **Layer 3: Human Interaction Management**
-   - Gaze-based interaction
-   - Sustained attention detection
+## 📊 Data Analysis & Report Generation   - Emergency stop protocols
 
-4. **Layer 4: Face-First Gaze Detection**
-   - YOLO face detection
-   - MediaPipe facial landmarks (468 points)
+
+
+### Step 1: Collect Data3. **Layer 3: Human Interaction Management**
+
+```bash   - Gaze-based interaction
+
+python main.py   - Sustained attention detection
+
+```
+
+- Set `ENABLE_CSV_LOGGING = True` in config.py4. **Layer 4: Face-First Gaze Detection**
+
+- Process your test videos   - YOLO face detection
+
+- Press 'p'/'n' to annotate false positives/negatives   - MediaPipe facial landmarks (468 points)
+
    - 3D head pose estimation
 
-5. **Layer 5: Base Robot Behaviors** (Lowest Priority)
-   - Patrol mode
-   - Idle behaviors
+### Step 2: Analyze Results
 
-Higher-priority layers can **suppress** lower-priority layers when active.
+```bash5. **Layer 5: Base Robot Behaviors** (Lowest Priority)
 
----
+python analyze_results.py "Control Tests/Control Result CSV/results_1324.csv"   - Patrol mode
+
+```   - Idle behaviors
+
+Generates:
+
+- Confusion Matrix (TP, FP, FN, TN)Higher-priority layers can **suppress** lower-priority layers when active.
+
+- Performance Metrics (Accuracy, Precision, Recall)
+
+- Accuracy by Distance tables---
+
+- LaTeX tables for reports
 
 ## 📂 Project Structure
 
-```
-Final_Model/
-├── main.py                      # Main application entry point
-├── config.py                    # All configuration parameters
-├── detection_layers.py          # Face/person detection classes
-├── behavior_manager.py          # Gaze & behavior management
-├── subsumption_layers.py        # 5-layer subsumption system
-├── utils.py                     # Utility functions
-├── test_video_mode.py          # Interactive testing script
-├── README.md                    # This file
+### Step 3: Create Graphs
+
+```bash```
+
+python create_graphs.py "Control Tests/Control Result CSV/results_1324.csv"Final_Model/
+
+```├── main.py                      # Main application entry point
+
+Creates 6 publication-ready graphs:├── config.py                    # All configuration parameters
+
+- FPS performance├── detection_layers.py          # Face/person detection classes
+
+- Confidence vs distance├── behavior_manager.py          # Gaze & behavior management
+
+- Confusion matrix├── subsumption_layers.py        # 5-layer subsumption system
+
+- Accuracy by distance├── utils.py                     # Utility functions
+
+- Gaze distribution├── test_video_mode.py          # Interactive testing script
+
+- Detection method comparison├── README.md                    # This file
+
 ├── VIDEO_GUIDE.md              # Video processing documentation
-├── yolov8n-face.pt             # Face detection model
-├── yolov8s.pt                  # Person detection model (backup)
-├── InputVideos/                # Place input videos here
-└── ResultsVideos/              # Processed videos saved here
+
+**Note:** Requires matplotlib, pandas, numpy├── yolov8n-face.pt             # Face detection model
+
+```bash├── yolov8s.pt                  # Person detection model (backup)
+
+pip install matplotlib pandas numpy├── InputVideos/                # Place input videos here
+
+```└── ResultsVideos/              # Processed videos saved here
+
 ```
 
 ---
+
+---
+
+## 📁 Project Structure
 
 ## 🚀 Quick Start
 
-### Installation
-
-1. **Install required packages:**
-```bash
-pip install ultralytics opencv-python mediapipe numpy
 ```
 
-2. **Ensure model files exist:**
-   - `yolov8n-face.pt` (primary face detection)
-   - `yolov8s.pt` (backup person detection)
+Final_Model/### Installation
 
-### Running Live Camera Mode
+├── main.py                    # Main application
 
-```python
+├── config.py                  # Configuration settings1. **Install required packages:**
+
+├── detection_layers.py        # Face detection & pose estimation```bash
+
+├── subsumption_layers.py      # Subsumption architecturepip install ultralytics opencv-python mediapipe numpy
+
+├── behavior_manager.py        # Behavior coordination```
+
+├── data_logger.py            # CSV data logging
+
+├── utils.py                  # Utility functions2. **Ensure model files exist:**
+
+├── analyze_results.py        # Analysis tool for reports   - `yolov8n-face.pt` (primary face detection)
+
+├── create_graphs.py          # Graph generation tool   - `yolov8s.pt` (backup person detection)
+
+├── Documentation/            # All documentation files
+
+│   ├── README.md             # Complete documentation### Running Live Camera Mode
+
+│   ├── WORKFLOW.md           # Step-by-step guide
+
+│   ├── CSV_LOGGING_GUIDE.md  # Data logging details```python
+
+│   ├── REPORT_TOOLS.md       # Analysis tools reference# In config.py
+
+│   ├── QUICKREF.txt          # Quick reference cardVIDEO_MODE = False
+
+│   └── VIDEO_GUIDE.md        # Video processing guide```
+
+├── Control Tests/            # Test videos and results
+
+│   ├── IMG_1324.MOV          # Full test video```bash
+
+│   ├── Move_5to1.mov         # 5m→1m approach testpython main.py
+
+│   ├── Move_1to5.mov         # 1m→5m retreat test```
+
+│   ├── Control Result CSV/   # CSV output files
+
+│   └── Control Results Videos/ # Processed videos### Processing a Video File
+
+└── yolov8*.pt               # YOLO model files
+
+``````python
+
 # In config.py
-VIDEO_MODE = False
-```
 
-```bash
-python main.py
-```
+---VIDEO_MODE = True
 
-### Processing a Video File
-
-```python
-# In config.py
-VIDEO_MODE = True
 INPUT_VIDEO_PATH = 'InputVideos/my_video.MOV'
-OUTPUT_VIDEO_PATH = 'ResultsVideos/output.mp4'
+
+## 🎯 Key FeaturesOUTPUT_VIDEO_PATH = 'ResultsVideos/output.mp4'
+
 ```
 
-```bash
-python main.py
+- ✅ **Double-Layer Detection**: YOLO + MediaPipe for robust face detection
+
+- ✅ **3D Pose Estimation**: Real-time head orientation (yaw, pitch, roll)```bash
+
+- ✅ **Distance Estimation**: Adaptive proximity detectionpython main.py
+
+- ✅ **Gaze Classification**: 5-layer subsumption architecture```
+
+- ✅ **Data Logging**: Complete CSV export with 4-way classification
+
+- ✅ **Analysis Tools**: Automatic table and graph generation---
+
+- ✅ **Dual Mode**: Live camera or video file processing
+
+- ✅ **Frontal Face Filtering**: Rejects back-of-head false detections## ⚙️ Configuration
+
+
+
+---All settings are in **`config.py`**. Key parameters:
+
+
+
+## 📖 Documentation### Mode Selection
+
+```python
+
+For complete documentation, see the `Documentation/` folder:VIDEO_MODE = False              # False = live camera, True = video file
+
+```
+
+- **README.md** - Complete system documentation
+
+- **WORKFLOW.md** - Step-by-step workflow guide### Camera Settings (Live Mode)
+
+- **CSV_LOGGING_GUIDE.md** - Data collection and CSV format```python
+
+- **REPORT_TOOLS.md** - Analysis tools and metricsCAMERA_INDEX = 0                # Primary camera (try 1 if 0 fails)
+
+- **QUICKREF.txt** - Quick command referenceCAMERA_RESOLUTION = (640, 480)  # Camera resolution
+
+- **VIDEO_GUIDE.md** - Video processing guideCAMERA_FPS = 30                 # Frame rate
+
 ```
 
 ---
-
-## ⚙️ Configuration
-
-All settings are in **`config.py`**. Key parameters:
-
-### Mode Selection
-```python
-VIDEO_MODE = False              # False = live camera, True = video file
-```
-
-### Camera Settings (Live Mode)
-```python
-CAMERA_INDEX = 0                # Primary camera (try 1 if 0 fails)
-CAMERA_RESOLUTION = (640, 480)  # Camera resolution
-CAMERA_FPS = 30                 # Frame rate
-```
 
 ### Video Processing Settings
-```python
+
+## 🔧 Requirements```python
+
 INPUT_VIDEO_PATH = 'InputVideos/video.MOV'
-OUTPUT_VIDEO_PATH = 'ResultsVideos/output.mp4'
-SHOW_DISPLAY_WINDOW = True      # False = faster processing
+
+```bashOUTPUT_VIDEO_PATH = 'ResultsVideos/output.mp4'
+
+pip install ultralytics opencv-python mediapipe numpy pandas matplotlibSHOW_DISPLAY_WINDOW = True      # False = faster processing
+
+``````
+
+
+
+**Required Files:**### Detection Thresholds
+
+- `yolov8n-face.pt` - Face detection model```python
+
+- `yolov8s.pt` - General detection model (backup)MIN_FACE_CONF = 0.05            # Face detection confidence
+
+YAW_THRESH_DEG = 20.0           # Gaze detection threshold (degrees)
+
+---PITCH_THRESH_DEG = 15.0         # Vertical head rotation threshold
+
 ```
 
-### Detection Thresholds
-```python
-MIN_FACE_CONF = 0.05            # Face detection confidence
-YAW_THRESH_DEG = 20.0           # Gaze detection threshold (degrees)
-PITCH_THRESH_DEG = 15.0         # Vertical head rotation threshold
-```
+## 📊 Report Metrics
 
 ### Behavior Parameters
-```python
-SUSTAINED_GAZE_SEC = 3.0        # Seconds of sustained gaze to trigger
-APPROACH_DISTANCE = 1.5         # Meters for interaction distance
-```
 
----
+The system provides comprehensive metrics for academic reports:```python
+
+SUSTAINED_GAZE_SEC = 3.0        # Seconds of sustained gaze to trigger
+
+**Classification:**APPROACH_DISTANCE = 1.5         # Meters for interaction distance
+
+- True Positives, False Positives, False Negatives, True Negatives```
+
+
+
+**Performance Metrics:**---
+
+- Accuracy, Precision, Recall, Specificity, F1 Score
 
 ## 🎮 Controls
 
-### Keyboard Shortcuts (During Execution)
-- **'q'** - Quit program (saves video if in video mode)
-- **'r'** - Reset behavior manager state
-- **'s'** - Print status summary to console
-- **'p'** - Toggle performance logging
+**Analysis:**
 
----
+- Detection accuracy by distance range### Keyboard Shortcuts (During Execution)
 
-## 📊 Output Information
+- Processing performance (FPS)- **'q'** - Quit program (saves video if in video mode)
+
+- Gaze classification statistics- **'r'** - Reset behavior manager state
+
+- Detection method comparison- **'s'** - Print status summary to console
+
+- **'p'** - Mark current frame as **False Positive** (data logging)
+
+---- **'n'** - Mark current frame as **False Negative** (data logging)
+
+
+
+## 🐛 Troubleshooting---
+
+
+
+**Camera not opening:**## 📊 Output Information
+
+- Try changing `CAMERA_INDEX` from 0 to 1 in config.py
 
 ### Visual Overlays (Live Display & Video Output)
-- **Face bounding boxes** (cyan) with confidence scores
-- **468 facial landmarks** (green dots)
+
+**Video file not found:**- **Face bounding boxes** (cyan) with confidence scores
+
+- Use absolute path in `INPUT_VIDEO_PATH`- **468 facial landmarks** (green dots)
+
 - **3D head pose axes** (RGB arrows showing orientation)
-- **Gaze direction arrow** (indicates where person is looking)
-- **Gaze status** - "LOOKING" or "NOT LOOKING"
+
+**Slow processing:**- **Gaze direction arrow** (indicates where person is looking)
+
+- Set `SHOW_DISPLAY_WINDOW = False` for faster video processing- **Gaze status** - "LOOKING" or "NOT LOOKING"
+
 - **Person bounding box** (yellow, backup detection)
 
-### Text Information Display
+**Low detection accuracy:**
+
+- Adjust `MIN_FACE_CONF` threshold in config.py### Text Information Display
+
+- Check lighting conditions
 
 **Top Right Corner:**
-- Face detection confidence
-- Head pose angles (Yaw, Pitch, Roll)
-- Estimated distance in meters
 
-**Top Left Corner:**
+For detailed troubleshooting, see `Documentation/README.md`- Face detection confidence
+
+- Head pose angles (Yaw, Pitch, Roll)
+
+---- Estimated distance in meters
+
+
+
+## 📞 Contact**Top Left Corner:**
+
 - Gaze status
-- Sustained gaze timer
-- Approach behavior status
+
+**Author:** Nicholas Lloyd  - Sustained gaze timer
+
+**Project:** EGH400 - Temi Robot Navigation System  - Approach behavior status
+
+**Date:** October 2025
 
 **Bottom Left Corner:**
-- Active subsumption layer
-- Layer status for all 5 layers
-- Suppressed layer indicators
 
----
+---- Active subsumption layer
+
+- Layer status for all 5 layers
+
+## 📝 License- Suppressed layer indicators
+
+
+
+Academic project for EGH400.---
+
 
 ## 🎯 Detection Pipeline
 
@@ -264,6 +460,73 @@ python main.py  # with VIDEO_MODE = False
 # Video processing
 python main.py  # with VIDEO_MODE = True
 ```
+
+---
+
+## 📊 Data Logging & Report Generation
+
+### Quick Start - Generate Report Data
+
+**Step 1: Run Control Tests**
+```bash
+python run_control_tests.py
+```
+- Select test video from menu
+- Watch playback and annotate:
+  - Press **'p'** for False Positives (wrong detections)
+  - Press **'n'** for False Negatives (missed faces)
+  - System auto-marks True Positives and True Negatives
+- CSV results saved automatically
+
+**Step 2: Analyze Results**
+```bash
+python analyze_results.py "Control Tests/Control Result CSV/results_1324.csv"
+```
+Generates:
+- Confusion Matrix (TP, FP, FN, TN)
+- Performance Metrics (Accuracy, Precision, Recall, F1)
+- Accuracy by Distance tables
+- LaTeX tables for reports
+
+**Step 3: Create Graphs**
+```bash
+python create_graphs.py "Control Tests/Control Result CSV/results_1324.csv"
+```
+Creates 6 publication-ready graphs:
+- FPS performance over time
+- Confidence vs distance scatter plot
+- Confusion matrix visualization
+- Accuracy by distance bar chart
+- Gaze distribution pie chart
+- Detection method comparison
+
+### Data Logging Features
+
+**4-Way Classification System:**
+- **True Positive (TP)**: Face detected correctly (automatic)
+- **False Positive (FP)**: Wrong detection - press 'p' key
+- **False Negative (FN)**: Missed face - press 'n' key
+- **True Negative (TN)**: No face correctly identified (automatic)
+
+**Metrics Logged Per Frame:**
+- Detection confidence and method
+- Pose angles (yaw, pitch, roll)
+- Distance estimation
+- Gaze classification
+- Processing performance (FPS, frame time)
+- Manual annotations
+
+**CSV Output Includes:**
+- Per-frame detailed metrics
+- Confusion matrix summary
+- Performance statistics
+- Accuracy/Precision/Recall calculations
+
+### Documentation
+- **WORKFLOW.md** - Complete step-by-step guide
+- **CSV_LOGGING_GUIDE.md** - Data collection details
+- **REPORT_TOOLS.md** - Analysis tools reference
+- **QUICKREF.txt** - Quick command reference
 
 ---
 

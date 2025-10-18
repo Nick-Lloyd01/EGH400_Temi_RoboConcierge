@@ -5,9 +5,6 @@ This module contains the core detection classes:
 - FaceDetector: YOLO-based face detection (primary)
 - PersonDetector: YOLO-based person detection (backup)
 - FacePoseEstimator: Face-first pose estimation pipeline
-
-Author: Nicholas Lloyd
-Date: October 2025
 """
 
 import cv2

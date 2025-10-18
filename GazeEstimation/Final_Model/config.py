@@ -3,51 +3,52 @@ Configuration Module for Temi 5-Layer Subsumption Architecture
 
 This module contains all configuration constants, thresholds, and parameters
 used throughout the Temi gaze detection and behavior system.
-
-Author: Nicholas Lloyd
-Date: October 2025
 """
 
 # =============================================================================
-# MODEL PATHS AND FILES
+# FILE PATHS - CHANGE THESE FOR DIFFERENT TEST VIDEOS
+# =============================================================================
+# 
+# QUICK START: To process a different video, just change TEST_NAME below
+# Example: TEST_NAME = '1324'  → processes IMG_1324.MOV
+#          TEST_NAME = '5to1'  → processes Move_5to1.mov
+#
+# All output files (video, CSV, graphs) will automatically use this name
 # =============================================================================
 
-# YOLO model paths - ensure these files exist in your project directory
+# Test video identifier (used for naming outputs)
+TEST_NAME = 'Distance_Test'                     # Change this for different test runs (e.g., '1324', '5to1', '1to5')
+
+#   python analyze_results.py "Control Tests/Control Result CSV/Distance_Test/output_Distance_Test_CSV_results.csv"
+#   python create_graphs.py "Control Tests/Control Result CSV/Distance_Test/output_Distance_Test_CSV_results.csv"
+
+# Input/Output Paths - All paths use TEST_NAME for consistency
+INPUT_VIDEO_PATH = f'Control Tests/{TEST_NAME}.MOV'
+OUTPUT_VIDEO_PATH = f'Control Tests/Control Results Videos/output_{TEST_NAME}_Result.mp4'
+CSV_OUTPUT_PATH = f'Control Tests/Control Result CSV/{TEST_NAME}/output_{TEST_NAME}_CSV_results.csv'
+GRAPH_OUTPUT_DIR = f'Control Tests/Control Result CSV/{TEST_NAME}/graphs'  # Graphs saved here
+
+# NOTE: When you run analyze_results.py or create_graphs.py, use CSV_OUTPUT_PATH:
+#   python analyze_results.py "Control Tests/Control Result CSV/{TEST_NAME}/output_{TEST_NAME}_CSV_results.csv"
+#   python create_graphs.py "Control Tests/Control Result CSV/{TEST_NAME}/output_{TEST_NAME}_CSV_results.csv"
+
+
+
+# Model file paths
 YOLO_MODEL = 'yolov8s.pt'              # General purpose detection (backup)
 FACE_YOLO_MODEL = 'yolov8n-face.pt'    # Primary face detection model
 
-# =============================================================================
-# VIDEO INPUT/OUTPUT MODE
-# =============================================================================
-
-# Video processing mode configuration
-VIDEO_MODE = True 
-# VIDEO_MODE = False                    # Set to True to process video file instead of live camera
-                                       # Set to False for live camera mode
-
-# Video input/output paths (only used when VIDEO_MODE = True)
-INPUT_VIDEO_PATH = 'InputVideos/IMG_1324.MOV'    # Path to input video file
-OUTPUT_VIDEO_PATH = 'ResultsVideos/output_1324_002.mp4'   # Path to save processed output video
-
-# Video codec settings
-OUTPUT_VIDEO_CODEC = 'mp4v'            # Codec for output video ('mp4v', 'XVID', 'H264', etc.)
-OUTPUT_VIDEO_FPS = None                # FPS for output (None = match input video fps)
-
-# Display settings for video processing
-# SHOW_DISPLAY_WINDOW = True
-SHOW_DISPLAY_WINDOW = False             # Set to False to disable display window for faster processing
-                                        # (only affects video mode - live camera always shows display)
 
 # =============================================================================
 # DETECTION CONFIDENCE THRESHOLDS
 # =============================================================================
 
 # Person detection thresholds (used as backup)
-MIN_PERSON_CONF = 0.65                  # Minimum confidence for person detection
+MIN_PERSON_CONF = 0.5                  # Minimum confidence for person detection
 
 # Face detection thresholds (primary detection method)
-MIN_FACE_CONF = 0.65                  # Higher confidence for more reliable face detection
-MAX_NUM_FACES = 1                      # Maximum number of faces to process
+MIN_FACE_CONF = 0.5                  # Higher confidence for more reliable face detection
+MAX_NUM_FACES = 2                      # Maximum number of faces to process
 
 # Frontal face filtering (prevents back-of-head false detections)
 REQUIRE_FRONTAL_FACE = True            # Only accept frontal faces (reject back of head)
@@ -57,6 +58,42 @@ MAX_YAW_FOR_FRONTAL = 90.0             # Maximum yaw angle for frontal face (deg
 
 # MediaPipe face mesh confidence settings (only runs if face detected by YOLO)
 MIN_DETECTION_CONFIDENCE = 0.15        # Low confidence for landmarks - double layer check
+
+# =============================================================================
+# MODE CONFIGURATION
+# =============================================================================
+
+# Video processing mode
+VIDEO_MODE = True                      # True = process video file, False = live camera
+
+# Display settings
+SHOW_DISPLAY_WINDOW = True             # False = faster processing without display window
+
+# Data logging
+ENABLE_CSV_LOGGING = True              # True = log all metrics to CSV for analysis
+
+# Video output settings
+OUTPUT_VIDEO_CODEC = 'mp4v'            # Codec for output video ('mp4v', 'XVID', 'H264', etc.)
+OUTPUT_VIDEO_FPS = None                # FPS for output (None = match input video fps)
+
+# =============================================================================
+# DATA LOGGING CONFIGURATION
+# =============================================================================
+
+# Logging configuration
+LOG_FRAME_METRICS = True                # Log per-frame detection data
+LOG_PERFORMANCE = True                  # Log FPS and processing time
+LOG_DETECTION_ACCURACY = True           # Log face/landmark detection success
+LOG_DISTANCE_ESTIMATES = True           # Log distance estimation data
+LOG_GAZE_CLASSIFICATION = True          # Log gaze detection results
+LOG_FALSE_POSITIVES = True              # Enable manual false positive/negative logging (press 'p' or 'n')
+
+# Additional report metrics
+LOG_CONFIDENCE_SCORES = True            # Log YOLO and MediaPipe confidence scores
+LOG_POSE_ANGLES_DETAIL = True           # Log detailed yaw/pitch/roll measurements
+LOG_ENVIRONMENTAL_FACTORS = True        # Log lighting, motion blur indicators (future)
+LOG_PROCESSING_STAGES = True            # Log time spent in each detection stage (future)
+
 
 # =============================================================================
 # GAZE DETECTION PARAMETERS
@@ -192,7 +229,7 @@ TEXT_THICKNESS = 2                     # Default text thickness
 
 # Text size multiplier for all detection overlays
 # Increase this value to make ALL text larger (1.0 = normal, 1.5 = 50% larger, 2.0 = double size)
-TEXT_MULTIPLIER = 0.8                  # Global multiplier for all detection text
+TEXT_MULTIPLIER = 1.0                  # Global multiplier for all detection text
 
 # =============================================================================
 # DEBUGGING AND LOGGING
