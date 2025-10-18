@@ -38,7 +38,12 @@ from utils import *
 from detection_layers import FacePoseEstimator
 from subsumption_layers import SubsumptionCoordinator  
 from behavior_manager import BehaviorCoordinator
-from data_logger import DataLogger  # Import data logging module
+
+# Import data logging module from Result Programs folder
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'Result Programs'))
+from data_logger import DataLogger
 
 # =============================================================================
 # MAIN APPLICATION CLASS
